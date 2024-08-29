@@ -1,0 +1,32 @@
+name: iOS CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Xcode
+      run: sudo xcode-select -switch /Applications/Xcode_12.5.app
+
+    - name: Install dependencies
+      run: |
+        brew install cocoapods
+        pod install
+      working-directory: ./YourProjectName
+
+    - name: Build
+      run: xcodebuild -workspace YourProjectName.xcworkspace -scheme YourProjectScheme -sdk iphoneos -configuration Release build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+
+    - name: Run Tests
+      run: xcodebuild test -workspace YourProjectName.xcworkspace -scheme YourProjectScheme -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11,OS=14.4'
